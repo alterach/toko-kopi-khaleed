@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+/* ===========================================
+   TOKO KOPI KHALEED - "TIMELESS FLUIDITY" DESIGN SYSTEM
+   =========================================== */
+
+/* Day Mode (Default: 06:00 - 17:59) */
+:root {
+  --bg: #FDF8F1;
+  /* Paper */
+  --text: #2C1B10;
+  /* Coffee */
+  --accent: #5F6F52;
+  /* Sage */
+  --card: #FFFFFF;
+  --glass: rgba(255, 255, 255, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.1);
+
+  /* Font Families */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+}
+
+/* Night Mode (18:00 - 05:59) */
+.dark-mode {
+  --bg: #0D0D0D;
+  /* Obsidian */
+  --text: #E0E0E0;
+  /* Silver */
+  --accent: #FFBF00;
+  /* Amber */
+  --card: #1A1A1A;
+  --glass: rgba(0, 0, 0, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.05);
+}
+
+/* Tailwind v4 Theme Integration */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-text: var(--text);
+  --color-accent: var(--accent);
+  --color-card: var(--card);
+  --color-glass: var(--glass);
+
+  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+}
+
+/* ===========================================
+   BASE STYLES
+   =========================================== */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.6s ease;
+}
+
+/* ===========================================
+   TYPOGRAPHY
+   =========================================== */
+.serif {
+  font-family: var(--font-serif);
+}
+
+.sans {
+  font-family: var(--font-sans);
+}
+
+/* ===========================================
+   GLASSMORPHISM
+   =========================================== */
+.glass {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+
+/* Pulse Indicator (Open 24H) */
+.pulse-indicator {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(95, 111, 82, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(95, 111, 82, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(95, 111, 82, 0);
+  }
+}
+
+.dark-mode .pulse-indicator {
+  animation: pulse-dark 2s infinite;
+}
+
+@keyframes pulse-dark {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 191, 0, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(255, 191, 0, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 191, 0, 0);
+  }
+}
+
+/* Theme Wave Transition */
+.theme-wave {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: var(--accent);
+  border-radius: 50%;
+  z-index: 100;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* ===========================================
+   UTILITY CLASSES
+   =========================================== */
+
+/* Grainy Overlay for Vintage Feel */
+.grainy-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Product Image Clip Path */
+.product-clip {
+  clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+}
+
+/* Hide Scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Mask Fade for Horizontal Scroll */
+.mask-fade-right {
+  mask-image: linear-gradient(to right, black 85%, transparent);
+}
+
+/* Floating Card Shadow */
+.shadow-float {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08);
+}
+
+.dark-mode .shadow-float {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+}
+
+/* GPU Acceleration Hint */
+.gpu {
+  transform: translateZ(0);
+  will-change: transform;
+}
