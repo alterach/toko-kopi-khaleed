@@ -4,73 +4,58 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Navbar, CartBubble, Footer } from '@/components/layout';
 import { HeroSection, CategoryScroll } from '@/components/features/HeroSection';
-import { ProductGrid, Product } from '@/components/features/ProductCard';
+import { ProductGrid } from '@/components/features/ProductCard';
 import { useThemeStore } from '@/lib/store/useThemeStore';
+import { supabase } from '@/lib/supabase/client';
+import { Product, CATEGORY_LABELS } from '@/lib/supabase/types';
 
-// Mock data - akan diganti dengan Supabase nanti
-const MOCK_PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: 'Manuka Latte',
-    price: 48000,
-    category: 'Coffee',
-    description: 'Signature latte with Manuka honey',
-    image: 'https://images.unsplash.com/photo-1541167760496-162955ed8a9f?auto=format&fit=crop&q=80&w=800',
-    isAvailable: true,
-  },
-  {
-    id: '2',
-    name: 'Cold Brew',
-    price: 52000,
-    category: 'Coffee',
-    description: '24-hour slow brew, smooth and bold',
-    image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&q=80&w=800',
-    isAvailable: true,
-  },
-  {
-    id: '3',
-    name: 'Truffle Fries',
-    price: 65000,
-    category: 'Snacks',
-    description: 'Crispy fries with truffle oil',
-    image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&q=80&w=800',
-    isAvailable: true,
-  },
-  {
-    id: '4',
-    name: 'Matcha Oat',
-    price: 45000,
-    category: 'Non-Coffee',
-    description: 'Premium matcha with oat milk',
-    image: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&q=80&w=800',
-    isAvailable: true,
-  },
-  {
-    id: '5',
-    name: 'Nasi Gila',
-    price: 55000,
-    category: 'Meals',
-    description: 'Spicy fried rice with all the toppings',
-    image: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=800',
-    isAvailable: true,
-  },
-];
-
-const CATEGORIES = ['Coffee', 'Non-Coffee', 'Meals', 'Snacks'];
+const CATEGORIES = ['coffee', 'non-coffee', 'heavy-meal', 'snack'] as const;
+const CATEGORY_DISPLAY = ['Coffee', 'Non-Coffee', 'Meals', 'Snacks'];
 
 export default function Home() {
-  const [activeCategory, setActiveCategory] = useState('Coffee');
+  const [activeCategory, setActiveCategory] = useState<string>('coffee');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const { initializeTheme } = useThemeStore();
 
   useEffect(() => {
     setMounted(true);
     initializeTheme();
+    fetchProducts();
   }, [initializeTheme]);
 
-  const filteredProducts = MOCK_PRODUCTS.filter(
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_available', true)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredProducts = products.filter(
     (product) => product.category === activeCategory
   );
+
+  // Transform for ProductCard component
+  const displayProducts = filteredProducts.map((p) => ({
+    id: String(p.id),
+    name: p.name,
+    price: p.price,
+    category: CATEGORY_LABELS[p.category],
+    description: p.description || undefined,
+    image: p.image_url || '',
+    isAvailable: p.is_available,
+  }));
 
   // Prevent hydration mismatch
   if (!mounted) {
@@ -88,14 +73,26 @@ export default function Home() {
       <HeroSection />
 
       <CategoryScroll
-        categories={CATEGORIES}
-        activeCategory={activeCategory}
-        onCategoryChange={setActiveCategory}
+        categories={CATEGORY_DISPLAY}
+        activeCategory={CATEGORY_LABELS[activeCategory as keyof typeof CATEGORY_LABELS] || 'Coffee'}
+        onCategoryChange={(display) => {
+          // Find the key for this display value
+          const key = Object.entries(CATEGORY_LABELS).find(
+            ([, value]) => value === display
+          )?.[0] || 'coffee';
+          setActiveCategory(key);
+        }}
       />
 
-      <AnimatePresence mode="wait">
-        <ProductGrid key={activeCategory} products={filteredProducts} />
-      </AnimatePresence>
+      {loading ? (
+        <div className="flex justify-center py-20">
+          <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <ProductGrid key={activeCategory} products={displayProducts} />
+        </AnimatePresence>
+      )}
 
       <CartBubble />
 
