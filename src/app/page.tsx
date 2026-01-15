@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Navbar, CartBubble, Footer } from '@/components/layout';
 import { HeroSection, CategoryScroll } from '@/components/features/HeroSection';
@@ -14,6 +14,7 @@ const CATEGORY_DISPLAY = ['Coffee', 'Non-Coffee', 'Meals', 'Snacks'];
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState<string>('coffee');
+  const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
@@ -42,11 +43,29 @@ export default function Home() {
     }
   };
 
-  const filteredProducts = products.filter(
-    (product) => product.category === activeCategory
-  );
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
 
-  // Transform for ProductCard component
+  const filteredProducts = useMemo(() => {
+    let result = products;
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query) ||
+          p.description?.toLowerCase().includes(query)
+      );
+    }
+
+    if (activeCategory !== 'all') {
+      result = result.filter((p) => p.category === activeCategory);
+    }
+
+    return result;
+  }, [products, activeCategory, searchQuery]);
+
   const displayProducts = filteredProducts.map((p) => ({
     id: String(p.id),
     name: p.name,
@@ -57,7 +76,6 @@ export default function Home() {
     isAvailable: p.is_available,
   }));
 
-  // Prevent hydration mismatch
   if (!mounted) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center">
@@ -68,7 +86,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar />
+      <Navbar onSearch={handleSearch} />
 
       <HeroSection />
 
@@ -76,7 +94,6 @@ export default function Home() {
         categories={CATEGORY_DISPLAY}
         activeCategory={CATEGORY_LABELS[activeCategory as keyof typeof CATEGORY_LABELS] || 'Coffee'}
         onCategoryChange={(display) => {
-          // Find the key for this display value
           const key = Object.entries(CATEGORY_LABELS).find(
             ([, value]) => value === display
           )?.[0] || 'coffee';
@@ -88,9 +105,19 @@ export default function Home() {
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
         </div>
+      ) : displayProducts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <svg className="w-16 h-16 opacity-40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <p className="text-lg opacity-60 mb-2">No products found</p>
+          <p className="text-sm opacity-40">
+            {searchQuery ? `No results for "${searchQuery}"` : 'No products in this category'}
+          </p>
+        </div>
       ) : (
         <AnimatePresence mode="wait">
-          <ProductGrid key={activeCategory} products={displayProducts} />
+          <ProductGrid key={`${activeCategory}-${searchQuery}`} products={displayProducts} />
         </AnimatePresence>
       )}
 

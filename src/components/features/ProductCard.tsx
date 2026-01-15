@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { formatRupiah } from '@/lib/utils';
@@ -21,15 +22,23 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, index, reversed = false }: ProductCardProps) {
+    const router = useRouter();
     const addItem = useCartStore((state) => state.addItem);
 
-    const handleAddToCart = () => {
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.stopPropagation();
         addItem({
             id: product.id,
             name: product.name,
             price: product.price,
             image: product.image,
         });
+    };
+
+    const handleCardClick = () => {
+        if (product.isAvailable) {
+            router.push(`/products/${product.id}`);
+        }
     };
 
     const containerClass = reversed
@@ -45,9 +54,9 @@ export function ProductCard({ product, index, reversed = false }: ProductCardPro
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-50px' }}
             transition={{ duration: 0.8, delay: index * 0.1 }}
-            className={`product-card group relative ${containerClass}`}
+            className={`product-card group relative ${containerClass} ${product.isAvailable ? 'cursor-pointer' : ''}`}
+            onClick={handleCardClick}
         >
-            {/* Text Content */}
             <div className={`w-1/2 z-10 ${textAlign}`}>
                 <h3 className="font-serif text-3xl mb-1">{product.name}</h3>
                 <p className="text-accent font-semibold mb-4">{formatRupiah(product.price)}</p>
@@ -68,7 +77,6 @@ export function ProductCard({ product, index, reversed = false }: ProductCardPro
                 </motion.button>
             </div>
 
-            {/* Background Shape */}
             <div
                 className={`
           absolute ${bgPosition} w-3/5 aspect-square bg-card rounded-3xl -z-0 opacity-50 
@@ -76,9 +84,8 @@ export function ProductCard({ product, index, reversed = false }: ProductCardPro
         `}
             />
 
-            {/* Product Image */}
             <motion.div
-                whileHover={{ y: -16 }}
+                whileHover={product.isAvailable ? { y: -16 } : undefined}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="w-1/2 relative z-10 p-4"
             >

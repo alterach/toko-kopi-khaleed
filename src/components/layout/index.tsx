@@ -5,9 +5,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useThemeStore } from '@/lib/store/useThemeStore';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { formatRupiah } from '@/lib/utils';
+import { SearchBar } from '@/components/features/SearchBar';
 
-export function Navbar() {
+interface NavbarProps {
+    onSearch?: (query: string) => void;
+}
+
+export function Navbar({ onSearch }: NavbarProps) {
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const { isDarkMode, toggleTheme } = useThemeStore();
     const totalItems = useCartStore((state) => state.getTotalItems());
     const totalPrice = useCartStore((state) => state.getTotalPrice());
@@ -19,6 +25,10 @@ export function Navbar() {
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const handleSearch = (query: string) => {
+        onSearch?.(query);
+    };
 
     return (
         <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-[400px]">
@@ -32,12 +42,12 @@ export function Navbar() {
           ${isScrolled ? 'py-3 shadow-xl' : ''}
         `}
             >
-                {/* Search Icon */}
-                <button className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                </button>
+                {/* Search Bar */}
+                <SearchBar
+                    onSearch={handleSearch}
+                    isExpanded={isSearchExpanded}
+                    onToggle={() => setIsSearchExpanded(!isSearchExpanded)}
+                />
 
                 {/* Logo */}
                 <a href="/" className="font-serif text-lg font-bold tracking-tight">
