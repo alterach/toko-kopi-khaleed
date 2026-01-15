@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Navbar, CartBubble, Footer } from '@/components/layout';
+import { Navbar, Footer } from '@/components/layout';
+import { CartPanel } from '@/components/features/CartPanel';
 import { HeroSection, CategoryScroll } from '@/components/features/HeroSection';
 import { ProductGrid } from '@/components/features/ProductCard';
 import { ProductGridSkeleton } from '@/components/features/Skeleton';
-import { EmptyCartState } from '@/components/features/EmptyCartState';
 import { useThemeStore } from '@/lib/store/useThemeStore';
-import { useCartStore } from '@/lib/store/useCartStore';
 import { supabase } from '@/lib/supabase/client';
 import { Product, CATEGORY_LABELS } from '@/lib/supabase/types';
 
@@ -22,7 +21,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const { initializeTheme } = useThemeStore();
-  const cartItems = useCartStore((state) => state.items);
 
   useEffect(() => {
     setMounted(true);
@@ -123,9 +121,7 @@ export default function Home() {
         </AnimatePresence>
       )}
 
-      <CartBubble />
-
-      {cartItems.length === 0 && <EmptyCartState />}
+      <CartPanel />
 
       <Footer />
     </>

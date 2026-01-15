@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Navbar, CartBubble, Footer } from '@/components/layout';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Navbar, Footer } from '@/components/layout';
+import { CartPanel } from '@/components/features/CartPanel';
 import { useThemeStore } from '@/lib/store/useThemeStore';
 import { useCartStore } from '@/lib/store/useCartStore';
 import { supabase } from '@/lib/supabase/client';
@@ -80,8 +81,7 @@ export default function ProductDetailPage() {
             <ProductDetailSkeleton />
           </div>
         </main>
-        <CartBubble />
-        <Footer />
+<CartPanel />
       </>
     );
   }
@@ -225,7 +225,7 @@ export default function ProductDetailPage() {
         </motion.div>
       </motion.main>
 
-      <CartBubble />
+      <CartPanel />
 
       <Footer />
 
@@ -247,5 +247,3 @@ export default function ProductDetailPage() {
     </>
   );
 }
-
-import { AnimatePresence } from 'framer-motion';
