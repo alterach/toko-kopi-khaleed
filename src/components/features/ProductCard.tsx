@@ -51,75 +51,64 @@ export function ProductCard({ product, index, reversed = false }: ProductCardPro
         }
     };
 
-    const containerClass = reversed
-        ? 'flex flex-row-reverse items-center justify-between'
-        : 'flex items-center justify-between';
-
-    const textAlign = reversed ? 'text-right' : 'text-left';
-    const bgPosition = reversed ? 'left-0' : 'right-0';
-
     return (
         <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.8, delay: index * 0.1 }}
-            className={`product-card group relative ${containerClass} ${product.isAvailable ? 'cursor-pointer' : ''}`}
+            viewport={{ once: true, margin: '-20px' }}
+            transition={{ duration: 0.6, delay: index * 0.05 }}
+            className={`product-card group relative ${product.isAvailable ? 'cursor-pointer' : ''}`}
             onClick={handleCardClick}
         >
-            <div className={`w-1/2 z-10 ${textAlign}`}>
-                <h3 className="font-serif text-3xl mb-1">{product.name}</h3>
-                <p className="text-accent font-semibold mb-4">{formatRupiah(product.price)}</p>
-                <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleAddToCart}
-                    disabled={!product.isAvailable}
-                    className={`
-            px-6 py-3 bg-text text-bg rounded-full text-xs font-bold tracking-widest
-            transition-all duration-300
-            ${product.isAvailable
-                            ? 'hover:shadow-lg'
-                            : 'opacity-50 cursor-not-allowed'}
-          `}
-                >
-                    {product.isAvailable ? 'QUICK ADD +' : 'SOLD OUT'}
-                </motion.button>
-            </div>
-
-            <div
-                className={`
-          absolute ${bgPosition} w-3/5 aspect-square bg-card rounded-3xl -z-0 opacity-50 
-          group-hover:scale-105 transition-all duration-700
-        `}
-            />
-
-            <motion.div
-                whileHover={product.isAvailable ? { y: -16 } : undefined}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                className="w-1/2 relative z-10 p-4"
-            >
-                <button
-                    onClick={handleFavorite}
-                    className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-300 z-20 ${isFav ? 'text-red-500' : 'text-text/40 hover:text-red-500'}`}
-                >
-                    <motion.svg
-                        whileTap={{ scale: 0.8 }}
-                        className="w-6 h-6"
-                        fill={isFav ? 'currentColor' : 'none'}
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div className="order-2 md:order-1 z-10 text-center md:text-left">
+                    <h3 className="font-serif text-2xl md:text-3xl mb-1">{product.name}</h3>
+                    <p className="text-accent font-semibold mb-4">{formatRupiah(product.price)}</p>
+                    <motion.button
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleAddToCart}
+                        disabled={!product.isAvailable}
+                        className={`
+                            px-6 py-3 bg-text text-bg rounded-full text-xs font-bold tracking-widest
+                            transition-all duration-300 w-full md:w-auto
+                            ${product.isAvailable ? 'hover:shadow-lg' : 'opacity-50 cursor-not-allowed'}
+                        `}
                     >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </motion.svg>
-                </button>
-                <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full aspect-square object-contain drop-shadow-2xl"
-                    loading="lazy"
-                />
-            </motion.div>
+                        {product.isAvailable ? 'ADD TO CART +' : 'SOLD OUT'}
+                    </motion.button>
+                </div>
+
+                <div className="order-1 md:order-2 relative">
+                    <motion.div
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                        className="relative z-10"
+                    >
+                        <button
+                            onClick={handleFavorite}
+                            className={`absolute -top-2 -right-2 p-2.5 rounded-full glass z-20 touch-manipulation ${isFav ? 'text-red-500' : 'text-text/40 hover:text-red-500'}`}
+                        >
+                            <motion.svg
+                                whileTap={{ scale: 0.8 }}
+                                className="w-5 h-5"
+                                fill={isFav ? 'currentColor' : 'none'}
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </motion.svg>
+                        </button>
+                        <div className="w-32 h-32 md:w-48 md:h-48 mx-auto bg-card rounded-3xl overflow-hidden shadow-lg">
+                            <img
+                                src={product.image}
+                                alt={product.name}
+                                className="w-full h-full object-contain p-2"
+                                loading="lazy"
+                            />
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
         </motion.div>
     );
 }
@@ -130,13 +119,12 @@ interface ProductGridProps {
 
 export function ProductGrid({ products }: ProductGridProps) {
     return (
-        <section className="px-6 py-12 flex flex-col gap-16 max-w-6xl mx-auto">
+        <section className="px-4 md:px-6 py-8 md:py-12 flex flex-col gap-8 md:gap-16 max-w-2xl mx-auto">
             {products.map((product, index) => (
                 <ProductCard
                     key={product.id}
                     product={product}
                     index={index}
-                    reversed={index % 2 !== 0}
                 />
             ))}
         </section>

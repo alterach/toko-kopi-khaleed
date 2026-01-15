@@ -29,10 +29,10 @@ export function CartPanel() {
                 exit={{ y: 100, opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] bg-text text-bg px-8 py-5 rounded-full shadow-2xl flex items-center gap-4 hover:scale-105 transition-transform"
+                className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] bg-text text-bg px-6 py-4 rounded-full shadow-2xl flex items-center gap-3 active:scale-95 transition-transform touch-manipulation"
             >
                 <div className="relative">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                     {totalItems > 0 && (
@@ -42,10 +42,10 @@ export function CartPanel() {
                     )}
                 </div>
                 <div className="flex flex-col items-start leading-none">
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60 mb-1">
-                        {items.length > 0 ? 'Review Order' : 'Cart'}
+                    <span className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-60">
+                        {items.length > 0 ? 'Review' : 'Cart'}
                     </span>
-                    <span className="font-serif text-lg">{items.length > 0 ? formatRupiah(totalPrice) : 'Empty'}</span>
+                    <span className="font-serif text-base">{items.length > 0 ? formatRupiah(totalPrice) : 'Empty'}</span>
                 </div>
             </motion.button>
 
@@ -57,20 +57,20 @@ export function CartPanel() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsOpen(false)}
-                            className="fixed inset-0 bg-black/50 z-[150]"
+                            className="fixed inset-0 bg-black/60 z-[150]"
                         />
                         <motion.div
                             initial={{ x: '100%' }}
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed right-0 top-0 h-full w-full max-w-[450px] bg-bg z-[200] shadow-2xl flex flex-col"
+                            className="fixed right-0 top-0 h-full w-full max-w-[400px] bg-bg z-[200] shadow-2xl flex flex-col"
                         >
-                            <div className="p-6 border-b border-text/10 flex items-center justify-between">
-                                <h2 className="font-serif text-2xl">Your Order</h2>
+                            <div className="p-4 md:p-6 border-b border-text/10 flex items-center justify-between">
+                                <h2 className="font-serif text-xl md:text-2xl">Keranjang</h2>
                                 <button
                                     onClick={() => setIsOpen(false)}
-                                    className="w-10 h-10 rounded-full glass flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity"
+                                    className="w-10 h-10 rounded-full glass flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity active:scale-95 touch-manipulation"
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -78,21 +78,21 @@ export function CartPanel() {
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-3">
                                 {items.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-full text-center">
                                         <svg className="w-16 h-16 opacity-30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                         </svg>
-                                        <p className="opacity-60 mb-4">Your cart is empty</p>
+                                        <p className="opacity-60 mb-4">Keranjang kosong</p>
                                         <button
                                             onClick={() => {
                                                 setIsOpen(false);
                                                 router.push('/');
                                             }}
-                                            className="text-accent font-semibold hover:underline"
+                                            className="text-accent font-semibold hover:underline active:scale-95 transition-transform"
                                         >
-                                            Browse Menu
+                                            Lihat Menu
                                         </button>
                                     </div>
                                 ) : (
@@ -108,16 +108,15 @@ export function CartPanel() {
                             </div>
 
                             {items.length > 0 && (
-                                <div className="p-6 border-t border-text/10 space-y-4">
-                                    <div className="flex justify-between items-center text-lg">
+                                <div className="p-4 md:p-6 border-t border-text/10 space-y-4">
+                                    <div className="flex justify-between items-center">
                                         <span className="opacity-60">Total</span>
-                                        <span className="font-serif font-bold">{formatRupiah(totalPrice)}</span>
+                                        <span className="font-serif text-lg font-bold text-accent">{formatRupiah(totalPrice)}</span>
                                     </div>
                                     <motion.button
-                                        whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
                                         onClick={handleCheckout}
-                                        className="w-full bg-text text-bg py-4 rounded-full font-bold tracking-widest text-sm hover:shadow-lg transition-all"
+                                        className="w-full bg-text text-bg py-4 rounded-full font-bold tracking-widest text-sm hover:shadow-lg transition-all active:scale-95 touch-manipulation"
                                     >
                                         CHECKOUT
                                     </motion.button>
@@ -144,35 +143,35 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: CartItemRowProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -100 }}
-            className="glass p-4 rounded-2xl flex gap-4"
+            className="glass p-3 md:p-4 rounded-2xl flex gap-3"
         >
             {item.image && (
                 <img
                     src={item.image}
                     alt={item.name}
-                    className="w-16 h-16 rounded-xl object-cover"
+                    className="w-14 h-14 md:w-16 md:h-16 rounded-xl object-cover"
                 />
             )}
-            <div className="flex-1">
-                <h4 className="font-serif text-lg">{item.name}</h4>
+            <div className="flex-1 min-w-0">
+                <h4 className="font-serif text-base md:text-lg truncate">{item.name}</h4>
                 <p className="text-accent font-semibold text-sm">{formatRupiah(item.price)}</p>
                 {item.notes && (
-                    <p className="text-xs opacity-60 mt-1">{item.notes}</p>
+                    <p className="text-xs opacity-60 mt-1 line-clamp-1">{item.notes}</p>
                 )}
             </div>
             <div className="flex flex-col items-end gap-2">
                 <button
                     onClick={onRemove}
-                    className="w-6 h-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity"
+                    className="w-8 h-8 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity active:scale-95 touch-manipulation"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                <div className="flex items-center gap-2 glass rounded-full px-2 py-1">
+                <div className="flex items-center gap-1 glass rounded-full px-2 py-1">
                     <button
                         onClick={() => onUpdateQuantity(Math.max(1, item.quantity - 1))}
-                        className="w-6 h-6 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity"
+                        className="w-8 h-8 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity active:scale-95 touch-manipulation"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
@@ -181,7 +180,7 @@ function CartItemRow({ item, onUpdateQuantity, onRemove }: CartItemRowProps) {
                     <span className="w-6 text-center text-sm font-semibold">{item.quantity}</span>
                     <button
                         onClick={() => onUpdateQuantity(item.quantity + 1)}
-                        className="w-6 h-6 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity"
+                        className="w-8 h-8 flex items-center justify-center opacity-60 hover:opacity-100 transition-opacity active:scale-95 touch-manipulation"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
