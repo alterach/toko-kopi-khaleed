@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useCartStore } from '@/lib/store/useCartStore';
+import { useFavoriteStore } from '@/lib/store/useFavoriteStore';
 import { formatRupiah } from '@/lib/utils';
 
 export interface Product {
@@ -24,6 +26,8 @@ interface ProductCardProps {
 export function ProductCard({ product, index, reversed = false }: ProductCardProps) {
     const router = useRouter();
     const addItem = useCartStore((state) => state.addItem);
+    const { toggleFavorite, isFavorite } = useFavoriteStore();
+    const [isFav, setIsFav] = useState(isFavorite(product.id));
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -33,6 +37,12 @@ export function ProductCard({ product, index, reversed = false }: ProductCardPro
             price: product.price,
             image: product.image,
         });
+    };
+
+    const handleFavorite = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        toggleFavorite(product.id);
+        setIsFav(!isFav);
     };
 
     const handleCardClick = () => {
@@ -89,6 +99,20 @@ export function ProductCard({ product, index, reversed = false }: ProductCardPro
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="w-1/2 relative z-10 p-4"
             >
+                <button
+                    onClick={handleFavorite}
+                    className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-300 z-20 ${isFav ? 'text-red-500' : 'text-text/40 hover:text-red-500'}`}
+                >
+                    <motion.svg
+                        whileTap={{ scale: 0.8 }}
+                        className="w-6 h-6"
+                        fill={isFav ? 'currentColor' : 'none'}
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </motion.svg>
+                </button>
                 <img
                     src={product.image}
                     alt={product.name}
