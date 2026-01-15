@@ -9,6 +9,7 @@ import { useCartStore } from '@/lib/store/useCartStore';
 import { supabase } from '@/lib/supabase/client';
 import { Product, CATEGORY_LABELS } from '@/lib/supabase/types';
 import { formatRupiah } from '@/lib/utils';
+import { ProductDetailSkeleton } from '@/components/features/Skeleton';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -72,9 +73,16 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-      </div>
+      <>
+        <Navbar />
+        <main className="pt-32 px-6 pb-24 min-h-screen">
+          <div className="max-w-6xl mx-auto">
+            <ProductDetailSkeleton />
+          </div>
+        </main>
+        <CartBubble />
+        <Footer />
+      </>
     );
   }
 

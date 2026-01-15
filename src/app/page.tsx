@@ -5,6 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Navbar, CartBubble, Footer } from '@/components/layout';
 import { HeroSection, CategoryScroll } from '@/components/features/HeroSection';
 import { ProductGrid } from '@/components/features/ProductCard';
+import { ProductGridSkeleton } from '@/components/features/Skeleton';
 import { useThemeStore } from '@/lib/store/useThemeStore';
 import { supabase } from '@/lib/supabase/client';
 import { Product, CATEGORY_LABELS } from '@/lib/supabase/types';
@@ -102,9 +103,7 @@ export default function Home() {
       />
 
       {loading ? (
-        <div className="flex justify-center py-20">
-          <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-        </div>
+        <ProductGridSkeleton count={4} />
       ) : displayProducts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <svg className="w-16 h-16 opacity-40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
