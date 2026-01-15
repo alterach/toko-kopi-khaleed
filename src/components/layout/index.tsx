@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThemeStore } from '@/lib/store/useThemeStore';
 import { useCartStore } from '@/lib/store/useCartStore';
@@ -14,6 +14,7 @@ interface NavbarProps {
 export function Navbar({ onSearch }: NavbarProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const searchRef = useRef<HTMLDivElement>(null);
     const { isDarkMode, toggleTheme } = useThemeStore();
     const totalItems = useCartStore((state) => state.getTotalItems());
     const totalPrice = useCartStore((state) => state.getTotalPrice());
@@ -26,12 +27,23 @@ export function Navbar({ onSearch }: NavbarProps) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (isSearchExpanded && searchRef.current && !searchRef.current.contains(event.target as Node)) {
+                setIsSearchExpanded(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isSearchExpanded]);
+
     const handleSearch = (query: string) => {
         onSearch?.(query);
     };
 
     return (
-        <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-[400px]">
+        <nav ref={searchRef} className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-[400px]">
             <motion.div
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -42,21 +54,29 @@ export function Navbar({ onSearch }: NavbarProps) {
           ${isScrolled ? 'py-3 shadow-xl' : ''}
         `}
             >
-                {/* Search Bar */}
                 <SearchBar
                     onSearch={handleSearch}
                     isExpanded={isSearchExpanded}
                     onToggle={() => setIsSearchExpanded(!isSearchExpanded)}
                 />
 
-                {/* Logo */}
-                <a href="/" className="font-serif text-lg font-bold tracking-tight">
-                    KHALEED
-                </a>
+                <AnimatePresence mode="wait">
+                    {!isSearchExpanded && (
+                        <motion.a
+                            href="/"
+                            key="logo"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{ duration: 0.2 }}
+                            className="font-serif text-lg font-bold tracking-tight absolute left-1/2 -translate-x-1/2"
+                        >
+                            KHALEED
+                        </motion.a>
+                    )}
+                </AnimatePresence>
 
-                {/* Right Actions */}
                 <div className="flex items-center gap-4">
-                    {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
                         className="flex items-center justify-center p-1 transition-transform hover:scale-110"
@@ -83,7 +103,6 @@ export function Navbar({ onSearch }: NavbarProps) {
                         </AnimatePresence>
                     </button>
 
-                    {/* Login Link */}
                     <a href="/login" className="text-sm font-semibold opacity-70 hover:opacity-100 transition-opacity">
                         LOGIN
                     </a>
